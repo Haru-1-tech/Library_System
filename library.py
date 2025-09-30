@@ -46,6 +46,7 @@ def show_books(conn, only_available=False):
             cursor.execute("SELECT * FROM Books")
         rows= cursor.fetchall()
         print("-- Books in the library --")
+        print("Book Id | Title of the books | Author | ISBN | Availablity")
         for row in rows:
             print(f"{row[0]}, Title:{row[1]}, Author:{row[2]}, ISBN: {row[3]}, Available: {row[4]}")
     except mysql.connector.Error as e:
@@ -102,33 +103,41 @@ def borrow_book(conn, book_id, student_id=None, teacher_id=None):
         borrow_date=datetime.now().date()
         due_date= borrow_date + timedelta(days=15)
 
-        cursor.execute("""INSERT INTO Borrowings (BookID, StudentID, TeacherID, BorrowDate, DueDate, ReturnDate) VALUES (%s, %s, %s, %s, %s)""", (book_id, student_id, teacher_id, borrow_date, due_date))
+        cursor.execute("""INSERT INTO Borrowings (BookID, StudentID, TeacherID, BorrowDate, DueDate) VALUES (%s, %s, %s, %s, %s)
+                       """, (book_id, student_id, teacher_id, borrow_date, due_date))
 
+        borrow_id= cursor.lastrowid
+        print(f"Book borrowed successfully! Your Borrow ID is:{borrow_id} , Due date:{due_date}")
         cursor.execute("UPDATE Books SET Available = FALSE WHERE BookID = %s", (book_id,))
         conn.commit()
-        print(f"Book borrowed successfully! Due date:{due_date}")
     except mysql.connector.Error as e:
         print(f"Error borrowing book: {e}")
         return False
 
 
 # Returning the Borrowed Book
-def return_book(conn, borrow_id):
+def return_book(conn, borrow_id,student_id=None, teacher_id=None):
     try:
         cursor=conn.cursor()
         return_date = datetime.now().date()
 
-        # Get book id
-        cursor.execute("SELECT BookId FROM Borrowings WHERE BorrowID =%s", (borrow_id,))
-        result=cursor.fetchone()
-        if not result:
-            print("Invalid Borrow ID")
+        # Get the borrow id and the student/teacher id for double checking
+        if student_id:
+            cursor.execute("SELECT * FROM Borrowings WHERE BorrowID=%s AND StudentID=%s AND ReturnDate IS NULL", (borrow_id,student_id))
+        elif teacher_id:
+            cursor.execute("SELECT * FROM Borrowings WHERE BorrowID=%s AND TeacherID=%s AND ReturnDate IS NULL", (borrow_id,teacher_id))
+        else:
+            print("Error: Must provide StudentID or TeacherID to return a book.")
             return
-        book_id =result[0]
+        
+        borrow_record=cursor.fetchone()
+        if not borrow_record:
+            print("Invalid Borrow ID or you are not the borrower of this book.")
+            return
 
         # Update return date and set book as available
         cursor.execute("UPDATE Borrowings SET ReturnDate =%s where BorrowID = %s",(return_date, borrow_id))
-        cursor.execute("UPDATE Books SET Available = TRUE where BookID = %s", (book_id,))
+        cursor.execute("UPDATE Books SET Available = TRUE where BookID = %s", (borrow_record[1],))
         conn.commit()
         print("Book returned successfully!")
     except mysql.connector.Error as e:

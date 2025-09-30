@@ -68,9 +68,30 @@ def main():
             elif choice == 6:
                 try:
                     borrow_id=int(input("Enter the Borrow ID to return the book:"))
-                    return_book(conn,borrow_id)
                 except ValueError:
                     print("Invalid Input! Borrow ID must in numbers.")
+                    continue
+
+                # Asking if the returner is a student or a teacher
+                returner_type=input("Are you a student or teacher (S/T): ").strip().upper()
+                if returner_type == 'S':
+                    try:
+                        student_id=input("Enter your student ID: ")
+                        teacher_id=None
+                    except ValueError:
+                        print("Invalid Input! Student ID must be in numbers!")
+                        continue
+                elif returner_type == 'T':
+                    try:
+                        teacher_id=input("Enter your teacher ID: ")
+                        student_id=None
+                    except ValueError:
+                        print("Invalid Input! The teacher ID must be in numbers!")
+                        continue
+                else:
+                        print("Invalid Choice! Please enter S for Student or T for Teacher.")
+                        continue
+                return_book(conn,borrow_id, student_id, teacher_id)
 
             # Show all the borrowing records
             elif choice == 7:
@@ -78,6 +99,7 @@ def main():
 
             # To Exit the Library System    
             elif choice == 0:
+                print("Thank you for using our library system! Hope to see you again soon!")
                 exit(0)
             else:
                 print("Invalid Choice! Try again.")
