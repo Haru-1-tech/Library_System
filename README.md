@@ -10,7 +10,6 @@ This project allows students and teachers to:
 ## Tech Stack
 
 - Python (Backend + database handling)
-- Tkinter (Frontend GUI)
 - MySQL (Database)
 
 ## Setup
