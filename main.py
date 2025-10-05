@@ -1,4 +1,4 @@
-from library import *
+from library_functions import *
 
 # Connecting to the database through the main function
 def main():
@@ -38,6 +38,8 @@ def main():
             # To borrow a Book
             elif choice == 5:
                 try:
+                    print("-- Available Books --")
+                    show_books(conn,only_available=True)
                     book_id=int(input("Enter the Book id you want to borrow: "))
                 except ValueError:
                     print("Invalid Input! Book Id must in numbers.")
@@ -66,11 +68,6 @@ def main():
 
             # To Return a Book
             elif choice == 6:
-                try:
-                    borrow_id=int(input("Enter the Borrow ID to return the book:"))
-                except ValueError:
-                    print("Invalid Input! Borrow ID must in numbers.")
-                    continue
 
                 # Asking if the returner is a student or a teacher
                 returner_type=input("Are you a student or teacher (S/T): ").strip().upper()
@@ -91,6 +88,17 @@ def main():
                 else:
                         print("Invalid Choice! Please enter S for Student or T for Teacher.")
                         continue
+                
+                has_borrowings=show_user_borrowings(conn,student_id,teacher_id)
+
+                if not has_borrowings:
+                    continue
+
+                try:
+                    borrow_id=int(input("Enter the Borrow ID to return the book:"))
+                except ValueError:
+                    print("Invalid Input! Borrow ID must in numbers.")
+                    continue
                 return_book(conn,borrow_id, student_id, teacher_id)
 
             # Show all the borrowing records

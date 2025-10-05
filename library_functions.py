@@ -142,3 +142,29 @@ def return_book(conn, borrow_id,student_id=None, teacher_id=None):
         print("Book returned successfully!")
     except mysql.connector.Error as e:
         print(f"Error returning the book: {e}")
+    
+# Show the borrowings done by the user
+def show_user_borrowings(conn,student_id=None, teacher_id=None):
+    cursor=conn.cursor()
+
+    if student_id:
+        cursor.execute("SELECT BorrowID, BookID, BorrowDate, DueDate FROM Borrowings WHERE StudentID=%s and ReturnDate is NULL",(student_id,))
+    elif teacher_id:
+        cursor.execute("SELECT BorrowID, BookID, BorrowDate, DueDate FROM Borrowings WHERE TeacherID=%s and ReturnDate is NULL",(teacher_id,))
+
+    rows= cursor.fetchall()
+
+    # If no borrowings
+    if not rows:
+        print("You haven't borrowed anything yet!")
+        return False
+    
+    print("-- Your active Borrowings --")
+    for row in rows:
+        borrow_id,Book_id,borrow_date,due_date,return_date=row
+        if return_date:
+            print(f"Borrow ID:{borrow_id}, Book ID:{Book_id}, Borrowed:{borrow_date}, Due:{due_date},  Returned:{return_date}")
+        else:
+            print(f"Borrow ID:{borrow_id}, Book ID:{Book_id}, Borrowed:{borrow_date}, Due:{due_date},  Returned: Not Yet")
+    
+    return True
