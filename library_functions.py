@@ -142,29 +142,86 @@ def return_book(conn, borrow_id,student_id=None, teacher_id=None):
         print("Book returned successfully!")
     except mysql.connector.Error as e:
         print(f"Error returning the book: {e}")
-    
+
+def handle_return_flow(conn):
+    role= input("Are you a student or teacher (S/T):").strip().lower()
+
+    if role == "s":
+        try:
+            student_id = int(input("Enter your studentID: "))
+        except ValueError:
+            print("Invalid Input! Student ID must be a number!")
+            return 
+        borrowings = show_user_borrowings(conn,student_id=student_id)
+        if not borrowings:
+            return
+        
+        active_borrowings = [b for b in borrowings if b[4] is None]
+        if not active_borrowings:
+            print("You have no active borrowings to return.")
+            return
+        
+        try:
+            borrow_id= int(input("Enter the Borrow ID of the book you want to return: "))
+            valid_ids= [b[0] for b in active_borrowings]
+            if borrow_id not in valid_ids:
+                print("Invalid BorrowID. Please select from your active borrowings.")
+                return
+            return_book(conn,borrow_id,student_id=student_id)
+        except ValueError:
+            print("Invalid Input! Please enter a number.")
+
+    elif role == "t":
+        try:
+            teacher_id=int(input("Enter your Teacher Id:"))
+        except ValueError:
+            print("Invalid Input! Teacher Id must be a number.")
+            return
+        
+        borrowings=show_user_borrowings(conn,teacher_id=teacher_id)
+        if not borrowings:
+            return
+        
+        active_borrowings=[b for b in borrowings if b[4] is None]
+        if not active_borrowings:
+            print("You have no active borrowings to return.")
+            return
+        
+        try:
+            borrow_id=int(input("Enter the borrow id of the book you want to return:"))
+            valid_ids=[b[0] for b in active_borrowings]
+            if borrow_id not in valid_ids:
+                print("Invalid Borrow ID! Please select from your active borrowings.")
+                return
+            return_book(conn,borrow_id,teacher_id=teacher_id)
+        except ValueError:
+            print("Invalid Input! Please enter a number.")
+    else:
+        print("Invalid choice! Please enter S for Student or T for Teacher.")
+
 # Show the borrowings done by the user
-def show_user_borrowings(conn,student_id=None, teacher_id=None):
-    cursor=conn.cursor()
-
+def show_user_borrowings(conn, student_id=None, teacher_id=None):
+    cursor = conn.cursor()
     if student_id:
-        cursor.execute("SELECT BorrowID, BookID, BorrowDate, DueDate FROM Borrowings WHERE StudentID=%s and ReturnDate is NULL",(student_id,))
+        cursor.execute("""
+            SELECT BorrowID, BookID, BorrowDate, DueDate, ReturnDate 
+            FROM Borrowings WHERE StudentID=%s
+        """, (student_id,))
     elif teacher_id:
-        cursor.execute("SELECT BorrowID, BookID, BorrowDate, DueDate FROM Borrowings WHERE TeacherID=%s and ReturnDate is NULL",(teacher_id,))
+        cursor.execute("""
+            SELECT BorrowID, BookID, BorrowDate, DueDate, ReturnDate 
+            FROM Borrowings WHERE TeacherID=%s
+        """, (teacher_id,))
+    rows = cursor.fetchall()
 
-    rows= cursor.fetchall()
-
-    # If no borrowings
     if not rows:
         print("You haven't borrowed anything yet!")
-        return False
-    
-    print("-- Your active Borrowings --")
+        return []
+
+    print("-- Your Borrowing History --")
     for row in rows:
-        borrow_id,Book_id,borrow_date,due_date,return_date=row
-        if return_date:
-            print(f"Borrow ID:{borrow_id}, Book ID:{Book_id}, Borrowed:{borrow_date}, Due:{due_date},  Returned:{return_date}")
-        else:
-            print(f"Borrow ID:{borrow_id}, Book ID:{Book_id}, Borrowed:{borrow_date}, Due:{due_date},  Returned: Not Yet")
-    
-    return True
+        borrow_id, book_id, borrow_date, due_date, return_date = row
+        status = f"Returned: {return_date}" if return_date else "Returned: Not yet"
+        print(f"BorrowID: {borrow_id}, BookID: {book_id}, Borrowed: {borrow_date}, Due: {due_date}, {status}")
+
+    return rows
