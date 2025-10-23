@@ -9,6 +9,12 @@ This project allows students and teachers to:
 
 ## Tech Stack
 
+# Front End
+- HTML (Structure)
+- CSS (Design)
+- Flask (Connect Front End to the Back End)
+
+# Back End
 - Python (Backend + database handling)
 - MySQL (Database)
 

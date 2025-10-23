@@ -13,6 +13,24 @@ def connect_db():
     except mysql.connector.Error as e:
         print(f"Error connecting to the database: {e}")
         return None
+def fetch_books(conn, only_available=False):
+    cursor =conn.cursor()
+    if only_available:
+        cursor.execute("SELECT BookID, Title, Author, ISBN, Available FROM Books WHERE Available = TRUE")
+    else:
+        cursor.execute("SELECT BookID, Title, Author, ISBN, Available FROM Books")
+    rows=cursor.fetchall()
+    return rows
+
+def fetch_borrowings(conn, student_id=None, teacher_id=None):
+    cursor=conn.cursor()
+    if student_id is not None:
+        cursor.execute("""SELECT BorrowID, BookID, StudentID, TeacherID, BorrowDate, DueDate, ReturnDate FROM Borrowings WHERE StudentID=%s ORDER BY BorrowDate DESC""", (student_id,))
+    elif teacher_id is not None:
+        cursor.execute("""SELECT BorrowID, BookID, StudentID, TeacherID, BorrowDate, DueDate, ReturnDate  FROM Borrowings WHERE TeacherID=%s ORDER BY BorrowDate DESC""", (teacher_id,))
+    else:
+        cursor.execute("""SELECT BorrowID, BookID, StudentID, TeacherID, BorrowDate, DueDate, ReturnDate  FROM Borrowings ORDER BY BorrowDate DESC""")
+    return cursor.fetchall()
 
 # Registers the students
 def register_student(conn,name,dept):
