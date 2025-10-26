@@ -1,11 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+<section class="home">
+    <h2> Welcome to the Library Management System</h2>
+    <p>Manage your books, track borrowings, and simplify your library operations - all in one place!</p>
+
+    <div class="buttons">
+        <a href="{{url_for('books')}}" class="btn"> View Books </a>
+        <a href="{{url_for('borrow')}}" class="btn"> Borrow a Book </a>
+        <a href="{{url_for(return_page)}}" class="btn"> Return a Book </a>
+    </div>
+</section>
+{% endblock %}

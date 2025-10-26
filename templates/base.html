@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title if title else "Library System"}}</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+</head>
+<body>
+
+    <header>
+        <h1> Library Management System </h1>
+        <nav>
+            <a href="{{url_for('home')}}">Home</a>
+            <a href="{{url_for('books')}}">All Books</a>
+            <a href="{{url_for('available_books')}}">Available Books</a>
+            <a href="{{url_for('borrow')}}">Borrow</a>
+            <a href="{{url_for('return_page')}}">Return</a>
+            <a href="{{url_for('borrowings')}}">Borrowings</a>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Library System | Developed By Dhrubajoti Kar</p>
+    </footer>
+
+</body>
+</html>
