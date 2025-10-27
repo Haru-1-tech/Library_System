@@ -28,8 +28,8 @@ def available_books():
 def borrow():
     if request.method == 'POST':
         book_id = request.form['book_id']
-        student_id=request.form.get['student_id'] or None
-        teacher_id=request.form.get['teacher_id'] or None
+        student_id=request.form.get('student_id') or None
+        teacher_id=request.form.get('teacher_id') or None
 
         conn=connect_db()
         borrow_book(conn, book_id, student_id, teacher_id)
@@ -46,17 +46,17 @@ def borrow():
 @app.route('/return', methods=['GET','POST'])
 def return_page():
     if request.method == "POST":
-        borrow_id=request.form['borrow_id']
-        student_id=request.form.get('student_id') or None
-        teacher_id=request.form.get('teacher_id') or None
+        borrow_id = request.form['borrow_id']
+        student_id = request.form.get('student_id') or None
+        teacher_id = request.form.get('teacher_id') or None
 
-        conn=connect_db()
+        conn = connect_db()
         return_book(conn, borrow_id, student_id, teacher_id)
         conn.close()
 
-        flash("Book returned Successfully!", "success")
+        flash("Book returned successfully!", "success")
         return redirect(url_for('books'))
-    
+
     return render_template('return.html')
 
 @app.route('/borrowings')

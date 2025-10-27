@@ -8,7 +8,7 @@
     <div class="buttons">
         <a href="{{url_for('books')}}" class="btn"> View Books </a>
         <a href="{{url_for('borrow')}}" class="btn"> Borrow a Book </a>
-        <a href="{{url_for(return_page)}}" class="btn"> Return a Book </a>
+        <a href="{{ url_for('return_page') }}" class="btn"> Return a Book </a>
     </div>
 </section>
 {% endblock %}
