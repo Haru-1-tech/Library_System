@@ -1,0 +1,24 @@
+{% extends base.html %}
+
+{% block content %}
+<section class="borrow">
+    <h2>Borrow a Book</h2>
+
+    <form method="POST" action="{{url_for('borrow')}}">
+        <label for="book_id">Select Book:</label>
+        <select name="book_id" id="book_id">
+            {% for book in books %}
+            <option value="{{book [0] }}">{{ book[1]}}</option>
+            {% endfor %}
+        </select>
+
+        <label for="student_id">Student ID (if applicable):</label>
+        <input type="text" name="student_id">
+        
+        <label for="teacher_id">Teacher ID (if applicable):</label>
+        <input type="text" name="teacher_id">
+
+        <button type="submit">Borrow</button>
+    </form>
+</section>
+{% endblock %}
