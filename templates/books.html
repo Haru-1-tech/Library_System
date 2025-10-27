@@ -1,0 +1,26 @@
+{% extends base.html %}
+
+{% block content %}
+<section class="books">
+    <h2> All Books</h2>
+
+    {% if books %}
+    <table>
+        <tr>ID</tr>
+        <tr>Title</tr>
+        <tr>Author</tr>
+        <th>Status</th>
+        {% for book in books %}
+        <tr>
+            <td>{{book [0] }}</td>
+            <td>{{book [1] }}</td>
+            <td>{{book [2] }}</td>
+            <td>{{ "Available" if book[3] else "Borrowed" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p> No Books Found.</p>
+    {% endif %}
+</section>
+{% endblock %}
