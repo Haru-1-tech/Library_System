@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="borrowings">
+    <h2>📖 Current Borrowings</h2>
+
+    {% if borrowings %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Book</th>
+            <th>Borrower</th>
+            <th>Date Borrowed</th>
+            <th>Date Returned</th>
+        </tr>
+        {% for b in borrowings %}
+        <tr>
+            <td>{{ b[0] }}</td>
+            <td>{{ b[1] }}</td>
+            <td>{{ b[2] }}</td>
+            <td>{{ b[3] }}</td>
+            <td>{{ b[4] if b[4] else "Not Returned" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No borrowings found.</p>
+    {% endif %}
+</section>
+{% endblock %}
